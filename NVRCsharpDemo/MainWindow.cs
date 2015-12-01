@@ -281,7 +281,7 @@ namespace NVRCsharpDemo
         }
 
         //解码回调函数
-        private void DecCallbackFUN(int nPort, IntPtr pBuf, int nSize, ref PlayCtrl.FRAME_INFO pFrameInfo, int nReserved1, int nReserved2)
+        private void DecCallbackFUN(int nPort, IntPtr pBuf, int nSize, ref PlayCtrl.FRAME_INFO pFrameInfo, int nUser)
         {
             // 将pBuf解码后视频输入写入文件中（解码后YUV数据量极大，尤其是高清码流，不建议在回调函数中处理）
             if (pFrameInfo.nType == 3) //#define T_YV12	3
@@ -891,7 +891,7 @@ namespace NVRCsharpDemo
             jtOpenParam.calibrationObjectWidth = (uint)rect[0];
             jtOpenParam.calibrationObjectHeight = (uint)rect[0];
 
-            jtOpenParam.pCallback = del;
+            //jtOpenParam.pCallback = del;
 
             jtOpenParam.dwCallback = 1;
 
@@ -946,42 +946,42 @@ namespace NVRCsharpDemo
 
         private void btnTest2_Click(object sender, EventArgs e)
         {
-            MODSDK.CMP_FRAME_INFO_DELEGATE del = new MODSDK.CMP_FRAME_INFO_DELEGATE(onCallback);
+            //MODSDK.CMP_FRAME_INFO_DELEGATE del = new MODSDK.CMP_FRAME_INFO_DELEGATE(onCallback);
 
 
-            MODSDK.POINT point = new MODSDK.POINT();
-            point.x = 1;
-            point.y = 2;
+            //MODSDK.POINT point = new MODSDK.POINT();
+            //point.x = 1;
+            //point.y = 2;
 
-            MODSDK.JTPOLYGON_INFO jtPolygonInfo = new MODSDK.JTPOLYGON_INFO();
-            jtPolygonInfo.wType = 2;
-            jtPolygonInfo.wPointCount = 333;
+            //MODSDK.JTPOLYGON_INFO jtPolygonInfo = new MODSDK.JTPOLYGON_INFO();
+            //jtPolygonInfo.wType = 2;
+            //jtPolygonInfo.wPointCount = 333;
 
-            //IntPtr pPoint = Marshal.AllocCoTaskMem(Marshal.SizeOf(point));
-            //Marshal.StructureToPtr(point, pPoint, false);
-            //jtPolygonInfo.pPoints = pPoint;
+            ////IntPtr pPoint = Marshal.AllocCoTaskMem(Marshal.SizeOf(point));
+            ////Marshal.StructureToPtr(point, pPoint, false);
+            ////jtPolygonInfo.pPoints = pPoint;
 
 
-            MODSDK.JTMOD_OPEN_PARAM jtOpenParam = new MODSDK.JTMOD_OPEN_PARAM();
-            jtOpenParam.size = 1;
-            jtOpenParam.nWidth = 1;
-            jtOpenParam.nHeight = 1;
-            jtOpenParam.wPolygons = 1;
+            //MODSDK.JTMOD_OPEN_PARAM jtOpenParam = new MODSDK.JTMOD_OPEN_PARAM();
+            //jtOpenParam.size = 1;
+            //jtOpenParam.nWidth = 1;
+            //jtOpenParam.nHeight = 1;
+            //jtOpenParam.wPolygons = 1;
 
-            IntPtr pPolygons = Marshal.AllocCoTaskMem(Marshal.SizeOf(jtPolygonInfo));
-            Marshal.StructureToPtr(jtPolygonInfo, pPolygons, false);
-            jtOpenParam.pPolygons = pPolygons;
+            //IntPtr pPolygons = Marshal.AllocCoTaskMem(Marshal.SizeOf(jtPolygonInfo));
+            //Marshal.StructureToPtr(jtPolygonInfo, pPolygons, false);
+            //jtOpenParam.pPolygons = pPolygons;
 
-            jtOpenParam.startobjectID = 1;
+            //jtOpenParam.startobjectID = 1;
 
-            jtOpenParam.pCallback = del;
+            //jtOpenParam.pCallback = del;
 
-            jtOpenParam.dwCallback = 1;
+            //jtOpenParam.dwCallback = 1;
 
-            uint[] dwReverse = new uint[] { 1 };
-            jtOpenParam.dwReverse = dwReverse;
+            //uint[] dwReverse = new uint[] { 1 };
+            //jtOpenParam.dwReverse = dwReverse;
 
-            MODSDK.JtModCreate(ref jtOpenParam);
+            //MODSDK.JtModCreate(ref jtOpenParam);
         }
 
         private void onCallback(uint aaa, IntPtr callBackParamPtr)

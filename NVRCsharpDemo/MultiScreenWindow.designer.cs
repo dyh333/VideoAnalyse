@@ -63,6 +63,7 @@
             this.btnBMP = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnStop = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.comboBoxView = new System.Windows.Forms.ComboBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -79,27 +80,30 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.picCapture = new System.Windows.Forms.PictureBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.RealPlayWnd = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnRect = new System.Windows.Forms.Button();
-            this.txtExitNum = new System.Windows.Forms.TextBox();
-            this.txtEntryNum = new System.Windows.Forms.TextBox();
+            this.txtExitNum1 = new System.Windows.Forms.TextBox();
+            this.txtEntryNum1 = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.btnCallModCreate = new System.Windows.Forms.Button();
             this.btnDrawLine = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
             this.btnTest2 = new System.Windows.Forms.Button();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.RealPlayWnd = new System.Windows.Forms.PictureBox();
-            this.btnStop = new System.Windows.Forms.Button();
+            this.txtExitNum15 = new System.Windows.Forms.TextBox();
+            this.txtEntryNum15 = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picCapture)).BeginInit();
-            this.panel1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RealPlayWnd)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label10
@@ -232,7 +236,7 @@
             this.listViewIPChannel.Location = new System.Drawing.Point(4, 124);
             this.listViewIPChannel.MultiSelect = false;
             this.listViewIPChannel.Name = "listViewIPChannel";
-            this.listViewIPChannel.Size = new System.Drawing.Size(174, 311);
+            this.listViewIPChannel.Size = new System.Drawing.Size(174, 401);
             this.listViewIPChannel.TabIndex = 32;
             this.listViewIPChannel.UseCompatibleStateImageBehavior = false;
             this.listViewIPChannel.View = System.Windows.Forms.View.Details;
@@ -300,11 +304,21 @@
             this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.btnPreview);
             this.groupBox2.Controls.Add(this.btnBMP);
-            this.groupBox2.Location = new System.Drawing.Point(4, 462);
+            this.groupBox2.Location = new System.Drawing.Point(4, 554);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(604, 68);
             this.groupBox2.TabIndex = 40;
             this.groupBox2.TabStop = false;
+            // 
+            // btnStop
+            // 
+            this.btnStop.Location = new System.Drawing.Point(234, 15);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(75, 27);
+            this.btnStop.TabIndex = 48;
+            this.btnStop.Text = "Stop View";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // label12
             // 
@@ -380,7 +394,7 @@
             this.groupBox3.Controls.Add(this.textBoxUserName);
             this.groupBox3.Controls.Add(this.btnLogin);
             this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Location = new System.Drawing.Point(4, -2);
+            this.groupBox3.Location = new System.Drawing.Point(8, -2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(608, 117);
             this.groupBox3.TabIndex = 41;
@@ -399,7 +413,7 @@
             // 
             // btn_Exit
             // 
-            this.btn_Exit.Location = new System.Drawing.Point(641, 468);
+            this.btn_Exit.Location = new System.Drawing.Point(641, 560);
             this.btn_Exit.Name = "btn_Exit";
             this.btn_Exit.Size = new System.Drawing.Size(69, 53);
             this.btn_Exit.TabIndex = 42;
@@ -409,7 +423,7 @@
             // 
             // TextBoxInfo
             // 
-            this.TextBoxInfo.Location = new System.Drawing.Point(4, 536);
+            this.TextBoxInfo.Location = new System.Drawing.Point(4, 628);
             this.TextBoxInfo.Multiline = true;
             this.TextBoxInfo.Name = "TextBoxInfo";
             this.TextBoxInfo.Size = new System.Drawing.Size(608, 35);
@@ -417,7 +431,7 @@
             // 
             // btnRefresh
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(4, 439);
+            this.btnRefresh.Location = new System.Drawing.Point(4, 531);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(70, 23);
             this.btnRefresh.TabIndex = 44;
@@ -428,7 +442,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(80, 444);
+            this.label13.Location = new System.Drawing.Point(80, 536);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(77, 12);
             this.label13.TabIndex = 45;
@@ -439,10 +453,10 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(184, 124);
+            this.tabControl1.Location = new System.Drawing.Point(191, 124);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(428, 311);
+            this.tabControl1.Size = new System.Drawing.Size(624, 430);
             this.tabControl1.TabIndex = 46;
             // 
             // tabPage1
@@ -450,7 +464,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(420, 285);
+            this.tabPage1.Size = new System.Drawing.Size(616, 404);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "视频";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -461,7 +475,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(420, 285);
+            this.tabPage2.Size = new System.Drawing.Size(616, 404);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "截图";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -478,18 +492,43 @@
             this.picCapture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picCapture_MouseMove);
             this.picCapture.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picCapture_MouseUp);
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.RealPlayWnd);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(616, 404);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "tabPage3";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // RealPlayWnd
+            // 
+            this.RealPlayWnd.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.RealPlayWnd.Location = new System.Drawing.Point(34, -2);
+            this.RealPlayWnd.Name = "RealPlayWnd";
+            this.RealPlayWnd.Size = new System.Drawing.Size(352, 288);
+            this.RealPlayWnd.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.RealPlayWnd.TabIndex = 31;
+            this.RealPlayWnd.TabStop = false;
+            // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.txtExitNum15);
+            this.panel1.Controls.Add(this.txtEntryNum15);
+            this.panel1.Controls.Add(this.label18);
+            this.panel1.Controls.Add(this.label19);
             this.panel1.Controls.Add(this.btnRect);
-            this.panel1.Controls.Add(this.txtExitNum);
-            this.panel1.Controls.Add(this.txtEntryNum);
+            this.panel1.Controls.Add(this.txtExitNum1);
+            this.panel1.Controls.Add(this.txtEntryNum1);
             this.panel1.Controls.Add(this.label17);
             this.panel1.Controls.Add(this.label16);
             this.panel1.Controls.Add(this.btnCallModCreate);
             this.panel1.Controls.Add(this.btnDrawLine);
-            this.panel1.Location = new System.Drawing.Point(614, 146);
+            this.panel1.Location = new System.Drawing.Point(821, 146);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(96, 289);
+            this.panel1.Size = new System.Drawing.Size(124, 289);
             this.panel1.TabIndex = 47;
             // 
             // btnRect
@@ -502,37 +541,39 @@
             this.btnRect.UseVisualStyleBackColor = true;
             this.btnRect.Click += new System.EventHandler(this.btnRect_Click);
             // 
-            // txtExitNum
+            // txtExitNum1
             // 
-            this.txtExitNum.Location = new System.Drawing.Point(65, 187);
-            this.txtExitNum.Name = "txtExitNum";
-            this.txtExitNum.Size = new System.Drawing.Size(28, 21);
-            this.txtExitNum.TabIndex = 5;
+            this.txtExitNum1.Location = new System.Drawing.Point(87, 187);
+            this.txtExitNum1.Name = "txtExitNum1";
+            this.txtExitNum1.Size = new System.Drawing.Size(28, 21);
+            this.txtExitNum1.TabIndex = 5;
+            this.txtExitNum1.Text = "0";
             // 
-            // txtEntryNum
+            // txtEntryNum1
             // 
-            this.txtEntryNum.Location = new System.Drawing.Point(65, 156);
-            this.txtEntryNum.Name = "txtEntryNum";
-            this.txtEntryNum.Size = new System.Drawing.Size(28, 21);
-            this.txtEntryNum.TabIndex = 4;
+            this.txtEntryNum1.Location = new System.Drawing.Point(87, 156);
+            this.txtEntryNum1.Name = "txtEntryNum1";
+            this.txtEntryNum1.Size = new System.Drawing.Size(28, 21);
+            this.txtEntryNum1.TabIndex = 4;
+            this.txtEntryNum1.Text = "0";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(5, 190);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(65, 12);
+            this.label17.Size = new System.Drawing.Size(77, 12);
             this.label17.TabIndex = 3;
-            this.label17.Text = "出门人数：";
+            this.label17.Text = "c1出门人数：";
             // 
             // label16
             // 
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(5, 159);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(65, 12);
+            this.label16.Size = new System.Drawing.Size(77, 12);
             this.label16.TabIndex = 2;
-            this.label16.Text = "进门人数：";
+            this.label16.Text = "c1进门人数：";
             // 
             // btnCallModCreate
             // 
@@ -556,7 +597,7 @@
             // 
             // btnTest
             // 
-            this.btnTest.Location = new System.Drawing.Point(619, 14);
+            this.btnTest.Location = new System.Drawing.Point(747, 14);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(75, 23);
             this.btnTest.TabIndex = 48;
@@ -566,7 +607,7 @@
             // 
             // btnTest2
             // 
-            this.btnTest2.Location = new System.Drawing.Point(619, 50);
+            this.btnTest2.Location = new System.Drawing.Point(747, 50);
             this.btnTest2.Name = "btnTest2";
             this.btnTest2.Size = new System.Drawing.Size(75, 23);
             this.btnTest2.TabIndex = 49;
@@ -574,42 +615,45 @@
             this.btnTest2.UseVisualStyleBackColor = true;
             this.btnTest2.Click += new System.EventHandler(this.btnTest2_Click);
             // 
-            // tabPage3
+            // txtExitNum15
             // 
-            this.tabPage3.Controls.Add(this.RealPlayWnd);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(420, 285);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "tabPage3";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.txtExitNum15.Location = new System.Drawing.Point(86, 262);
+            this.txtExitNum15.Name = "txtExitNum15";
+            this.txtExitNum15.Size = new System.Drawing.Size(28, 21);
+            this.txtExitNum15.TabIndex = 10;
+            this.txtExitNum15.Text = "0";
             // 
-            // RealPlayWnd
+            // txtEntryNum15
             // 
-            this.RealPlayWnd.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.RealPlayWnd.Location = new System.Drawing.Point(34, -2);
-            this.RealPlayWnd.Name = "RealPlayWnd";
-            this.RealPlayWnd.Size = new System.Drawing.Size(352, 288);
-            this.RealPlayWnd.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.RealPlayWnd.TabIndex = 31;
-            this.RealPlayWnd.TabStop = false;
+            this.txtEntryNum15.Location = new System.Drawing.Point(86, 231);
+            this.txtEntryNum15.Name = "txtEntryNum15";
+            this.txtEntryNum15.Size = new System.Drawing.Size(28, 21);
+            this.txtEntryNum15.TabIndex = 9;
+            this.txtEntryNum15.Text = "0";
             // 
-            // btnStop
+            // label18
             // 
-            this.btnStop.Location = new System.Drawing.Point(234, 15);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(75, 27);
-            this.btnStop.TabIndex = 48;
-            this.btnStop.Text = "Stop View";
-            this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(4, 265);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(83, 12);
+            this.label18.TabIndex = 8;
+            this.label18.Text = "c15出门人数：";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(4, 234);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(83, 12);
+            this.label19.TabIndex = 7;
+            this.label19.Text = "c15进门人数：";
             // 
             // MultiScreenWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(739, 577);
+            this.ClientSize = new System.Drawing.Size(1258, 671);
             this.Controls.Add(this.btnTest2);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.panel1);
@@ -631,10 +675,10 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picCapture)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RealPlayWnd)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -687,12 +731,16 @@
         private System.Windows.Forms.Button btnCallModCreate;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox txtExitNum;
-        private System.Windows.Forms.TextBox txtEntryNum;
+        private System.Windows.Forms.TextBox txtExitNum1;
+        private System.Windows.Forms.TextBox txtEntryNum1;
         private System.Windows.Forms.Button btnRect;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.PictureBox RealPlayWnd;
         private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.TextBox txtExitNum15;
+        private System.Windows.Forms.TextBox txtEntryNum15;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label19;
     }
 }
 

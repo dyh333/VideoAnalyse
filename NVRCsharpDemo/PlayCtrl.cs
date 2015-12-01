@@ -383,7 +383,8 @@ class PlayCtrl
     public static extern uint PlayM4_GetPlayedFrames(int nPort);
 
     ////////////////ver 2.0 added///////////////////////////////////////
-    public delegate void DECCBFUN(int nPort, IntPtr pBuf, int nSize, ref FRAME_INFO pFrameInfo, int nReserved1, int nReserved2);
+    //public delegate void DECCBFUN(int nPort, IntPtr pBuf, int nSize, ref FRAME_INFO pFrameInfo, int nReserved1, int nReserved2);
+    public delegate void DECCBFUN(int nPort, IntPtr pBuf, int nSize, ref FRAME_INFO pFrameInfo, int nUser);
 
     [DllImport(@"..\bin\PlayCtrl.dll")]
     public static extern bool PlayM4_SetDecCallBack(int nPort, DECCBFUN DecCBFun);
@@ -699,6 +700,12 @@ class PlayCtrl
     public static extern bool PlayM4_SetDecCallBackMend(int nPort, DECCBFUN DecCBFun, int nUser);
 
     [DllImport(@"..\bin\PlayCtrl.dll")]
+    public static extern bool PlayM4_SetDecCallBackExMend(int nPort, DECCBFUN DecCBFun, IntPtr pDest, int nDestSize, int nUser);
+
+    [DllImport(@"..\bin\PlayCtrl.dll")]
+    public static extern bool PlayM4_SetDecCallBackEx(int nPort, DECCBFUN DecCBFun, IntPtr pDest, int nDestSize);
+
+    [DllImport(@"..\bin\PlayCtrl.dll")]
     public static extern bool PlayM4_SetSecretKey(int nPort, int lKeyType, string pSecretKey, int lKeyLen);
 
     // add by gb 2007-12-23
@@ -719,7 +726,6 @@ class PlayCtrl
 
     //public delegate void Anonymous_b532dad6_7470_4b10_9638_c82a363cd853(int nPort, System.IntPtr pBuf, int nSize, ref FRAME_INFO pFrameInfo, int nReserved1, int nReserved2);
 
-    [DllImport(@"..\bin\PlayCtrl.dll")]
-    public static extern bool PlayM4_SetDecCallBackEx(int nPort, DECCBFUN DecCBFun, IntPtr pDest, int nDestSize);
+    
 }
 

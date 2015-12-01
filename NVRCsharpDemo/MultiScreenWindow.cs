@@ -17,6 +17,16 @@ namespace NVRCsharpDemo
     public partial class MultiScreenWindow : Form
     {
         private PictureBox selectedRealPlayWnd;
+        private static Dictionary<int, int> channelPortDict = new Dictionary<int, int>();  //每一个通道对应的解码port
+        private static Dictionary<int, IntPtr> ptrRealHandleDict = new Dictionary<int, IntPtr>();  //每一个通道对应的显示窗口句柄
+        private static Dictionary<int, int> lRealHandleDict = new Dictionary<int, int>();  //每一个通道对应的预览返回值
+        private static Dictionary<int, int[,]> lineDict = new Dictionary<int, int[,]>();  //每一个通道对应的进出线
+        private static Dictionary<int, int[]> rectDict = new Dictionary<int, int[]>();  //每一个通道对应的识别框
+        private static Dictionary<int, int> gloparaDict = new Dictionary<int, int>(); //每一个通道对应的glopara
+        private static Dictionary<int, CHCNetSDK.REALDATACALLBACK> RealDataDict = new Dictionary<int, CHCNetSDK.REALDATACALLBACK>();  //11.30 add
+        private static Dictionary<int, PlayCtrl.DECCBFUN> fDisplayFunDict = new Dictionary<int, PlayCtrl.DECCBFUN>(); //11.30 add
+
+        private static MODSDK.CMP_FRAME_INFO_DELEGATE del;
 
         private bool m_bInitSDK = false;
         private bool m_bRecord = false;
@@ -30,18 +40,19 @@ namespace NVRCsharpDemo
         private string str;
         private long iSelIndex = 0;
         private uint dwAChanTotalNum = 0;
-        private Int32 m_lPort = -1;
-        private IntPtr m_ptrRealHandle;
+        //private Int32 m_lPort = -1;
+        //private IntPtr m_ptrRealHandle;
+
         private int[] iIPDevID = new int[96];
         private int[] iChannelNum = new int[96];
 
-        private CHCNetSDK.REALDATACALLBACK RealData = null;
+        //private static CHCNetSDK.REALDATACALLBACK RealData = null;
         public CHCNetSDK.NET_DVR_DEVICEINFO_V30 DeviceInfo;
         public CHCNetSDK.NET_DVR_IPPARACFG_V40 m_struIpParaCfgV40;
         public CHCNetSDK.NET_DVR_STREAM_MODE m_struStreamMode;
         public CHCNetSDK.NET_DVR_IPCHANINFO m_struChanInfo;
         public CHCNetSDK.NET_DVR_IPCHANINFO_V40 m_struChanInfoV40;
-        private PlayCtrl.DECCBFUN m_fDisplayFun = null;
+        //private static PlayCtrl.DECCBFUN m_fDisplayFun = null;
         public delegate void MyDebugInfo(string str);
 
         public MultiScreenWindow()
@@ -49,6 +60,8 @@ namespace NVRCsharpDemo
             InitializeComponent();
 
             CreateMultiScreen();
+
+            SetInitLineRect();
 
             m_bInitSDK = CHCNetSDK.NET_DVR_Init();
             if (m_bInitSDK == false)
@@ -78,6 +91,19 @@ namespace NVRCsharpDemo
                 str += "\n";
                 TextBoxInfo.AppendText(str);
             }
+        }
+
+        private void SetInitLineRect()
+        {
+            lineDict.Add(1, new int[2, 2] { { 32, 195 }, { 198, 134 } });
+            lineDict.Add(3, new int[2, 2] { { 227, 156 }, { 324, 157 } });
+            lineDict.Add(2, new int[2, 2] { { 227, 156 }, { 324, 157 } });
+            lineDict.Add(15, new int[2, 2] { { 227, 156 }, { 324, 157 } });
+
+            rectDict.Add(1, new int[2] { 30, 70 });
+            rectDict.Add(3, new int[2] { 31, 53 });
+            rectDict.Add(2, new int[2] { 31, 53 });
+            rectDict.Add(15, new int[2] { 31, 53 });
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -286,55 +312,81 @@ namespace NVRCsharpDemo
         }
 
         //解码回调函数
-        private void DecCallbackFUN(int nPort, IntPtr pBuf, int nSize, ref PlayCtrl.FRAME_INFO pFrameInfo, int nReserved1, int nReserved2)
+        private void DecCallbackFUN(int nPort, IntPtr pBuf, int nSize, ref PlayCtrl.FRAME_INFO pFrameInfo, int nUser)  //int nReserved1, int nReserved2
         {
+            int channel = -1;
+            foreach (var item in channelPortDict)
+            {
+                if (item.Value == nPort)
+                {
+                    channel = item.Key;
+                    break;
+                }
+            }
+
+
+
+
+
             // 将pBuf解码后视频输入写入文件中（解码后YUV数据量极大，尤其是高清码流，不建议在回调函数中处理）
             if (pFrameInfo.nType == 3) //#define T_YV12	3
             {
-                MODSDK.JTMOD_FRAME_INFO frameInfo = new MODSDK.JTMOD_FRAME_INFO();
-                frameInfo.size = (ushort)Marshal.SizeOf(frameInfo);
-                frameInfo.nWidth = (ushort)picCapture.Width;
-                frameInfo.nHeight = (ushort)picCapture.Height;
-                frameInfo.datatype = 1;
-                frameInfo.lDataLen = (uint)nSize;
-                frameInfo.iFrameIndex = pFrameInfo.dwFrameNum;
-                frameInfo.timestamp = (uint)pFrameInfo.nStamp;
-                frameInfo.pData = pBuf;
-                frameInfo.importGrade = 1;
-
-                MODSDK.JtModProcess(glopara, ref frameInfo);
 
 
 
 
+                if (gloparaDict.ContainsKey(channel))
+                {
+                                    
+                    MODSDK.JTMOD_FRAME_INFO frameInfo = new MODSDK.JTMOD_FRAME_INFO();
+                    frameInfo.size = (ushort)Marshal.SizeOf(frameInfo);
+                    frameInfo.nWidth = (ushort)picCapture.Width;
+                    frameInfo.nHeight = (ushort)picCapture.Height;
+                    frameInfo.datatype = 1;
+                    frameInfo.lDataLen = (uint)nSize;
+                    frameInfo.iFrameIndex = pFrameInfo.dwFrameNum;
+                    frameInfo.timestamp = (uint)pFrameInfo.nStamp;
+                    frameInfo.pData = pBuf;
+                    frameInfo.importGrade = 1;
+
+                    //MODSDK.JtModProcess(glopara, ref frameInfo);
+                    
+                    int result = MODSDK.JtModProcess(gloparaDict[channel], ref frameInfo);
+
+
+                }
 
 
 
-                //    FileStream fs = null;
-                //    BinaryWriter bw = null;
-                //    try
-                //    {
-                //        fs = new FileStream("DecodedVideo.yuv", FileMode.Append);
-                //        bw = new BinaryWriter(fs);
-                //        byte[] byteBuf = new byte[nSize];
-                //        Marshal.Copy(pBuf, byteBuf, 0, nSize);
-                //        bw.Write(byteBuf);
-                //        bw.Flush();
-                //    }
-                //    catch (System.Exception ex)
-                //    {
-                //        MessageBox.Show(ex.ToString());
-                //    }
-                //    finally
-                //    {
-                //        bw.Close();
-                //        fs.Close();
-                //    }
+
+            //    //    FileStream fs = null;
+            //    //    BinaryWriter bw = null;
+            //    //    try
+            //    //    {
+            //    //        fs = new FileStream("DecodedVideo.yuv", FileMode.Append);
+            //    //        bw = new BinaryWriter(fs);
+            //    //        byte[] byteBuf = new byte[nSize];
+            //    //        Marshal.Copy(pBuf, byteBuf, 0, nSize);
+            //    //        bw.Write(byteBuf);
+            //    //        bw.Flush();
+            //    //    }
+            //    //    catch (System.Exception ex)
+            //    //    {
+            //    //        MessageBox.Show(ex.ToString());
+            //    //    }
+            //    //    finally
+            //    //    {
+            //    //        bw.Close();
+            //    //        fs.Close();
+            //    //    }
             }
         }
 
         public void RealDataCallBack(Int32 lRealHandle, UInt32 dwDataType, IntPtr pBuffer, UInt32 dwBufSize, IntPtr pUser)
         {
+            int lChannel = (int)pUser;
+            int lPort = channelPortDict[lChannel];
+
             //下面数据处理建议使用委托的方式
             MyDebugInfo AlarmInfo = new MyDebugInfo(DebugInfo);
             switch (dwDataType)
@@ -343,26 +395,30 @@ namespace NVRCsharpDemo
                     if (dwBufSize > 0)
                     {
                         //获取播放句柄 Get the port to play
-                        if (!PlayCtrl.PlayM4_GetPort(ref m_lPort))
+                        if (!PlayCtrl.PlayM4_GetPort(ref lPort))
                         {
-                            iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                            iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                             str = "PlayM4_GetPort failed, error code= " + iLastErr;
                             this.BeginInvoke(AlarmInfo, str);
                             break;
                         }
+                        else
+                        {
+                            channelPortDict[lChannel] = lPort;
+                        }
 
                         //设置流播放模式 Set the stream mode: real-time stream mode
-                        if (!PlayCtrl.PlayM4_SetStreamOpenMode(m_lPort, PlayCtrl.STREAME_REALTIME))
+                        if (!PlayCtrl.PlayM4_SetStreamOpenMode(lPort, PlayCtrl.STREAME_REALTIME))
                         {
-                            iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                            iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                             str = "Set STREAME_REALTIME mode failed, error code= " + iLastErr;
                             this.BeginInvoke(AlarmInfo, str);
                         }
 
                         //打开码流，送入头数据 Open stream
-                        if (!PlayCtrl.PlayM4_OpenStream(m_lPort, pBuffer, dwBufSize, 2 * 1024 * 1024))
+                        if (!PlayCtrl.PlayM4_OpenStream(lPort, pBuffer, dwBufSize, 2 * 1024 * 1024))
                         {
-                            iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                            iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                             str = "PlayM4_OpenStream failed, error code= " + iLastErr;
                             this.BeginInvoke(AlarmInfo, str);
                             break;
@@ -370,47 +426,53 @@ namespace NVRCsharpDemo
 
 
                         //设置显示缓冲区个数 Set the display buffer number
-                        if (!PlayCtrl.PlayM4_SetDisplayBuf(m_lPort, 15))
+                        if (!PlayCtrl.PlayM4_SetDisplayBuf(lPort, 15))
                         {
-                            iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                            iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                             str = "PlayM4_SetDisplayBuf failed, error code= " + iLastErr;
                             this.BeginInvoke(AlarmInfo, str);
                         }
 
                         //设置显示模式 Set the display mode
-                        if (!PlayCtrl.PlayM4_SetOverlayMode(m_lPort, 0, 0/* COLORREF(0)*/)) //play off screen 
+                        if (!PlayCtrl.PlayM4_SetOverlayMode(lPort, 0, 0/* COLORREF(0)*/)) //play off screen 
                         {
-                            iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                            iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                             str = "PlayM4_SetOverlayMode failed, error code= " + iLastErr;
                             this.BeginInvoke(AlarmInfo, str);
                         }
 
                         //设置解码回调函数，获取解码后音视频原始数据 Set callback function of decoded data
-                        m_fDisplayFun = new PlayCtrl.DECCBFUN(DecCallbackFUN);
-                        if (!PlayCtrl.PlayM4_SetDecCallBackEx(m_lPort, m_fDisplayFun, IntPtr.Zero, 0))
+                        PlayCtrl.DECCBFUN m_fDisplayFun = new PlayCtrl.DECCBFUN(DecCallbackFUN);
+                        fDisplayFunDict.Add(lChannel, m_fDisplayFun);
+                        if (!PlayCtrl.PlayM4_SetDecCallBackExMend(lPort, m_fDisplayFun, IntPtr.Zero, 0, lPort))
                         {
-                            this.BeginInvoke(AlarmInfo, "PlayM4_SetDisplayCallBack fail");
+                            //this.BeginInvoke(AlarmInfo, "PlayM4_SetDisplayCallBack fail");
                         }
 
+
                         //开始解码 Start to play                       
-                        if (!PlayCtrl.PlayM4_Play(m_lPort, m_ptrRealHandle))
+                        if (!PlayCtrl.PlayM4_Play(lPort, ptrRealHandleDict[lChannel]))
                         {
-                            iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                            iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                             str = "PlayM4_Play failed, error code= " + iLastErr;
                             this.BeginInvoke(AlarmInfo, str);
                             break;
                         }
+
+
+
+
                     }
                     break;
                 case CHCNetSDK.NET_DVR_STREAMDATA:     // video stream data
-                    if (dwBufSize > 0 && m_lPort != -1)
+                    if (dwBufSize > 0 && lPort != -1)
                     {
                         //for (int i = 0; i < 999; i++)  //dingyh
                         {
                             //送入码流数据进行解码 Input the stream data to decode
-                            if (!PlayCtrl.PlayM4_InputData(m_lPort, pBuffer, dwBufSize))
+                            if (!PlayCtrl.PlayM4_InputData(lPort, pBuffer, dwBufSize))
                             {
-                                iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                                iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                                 str = "PlayM4_InputData failed, error code= " + iLastErr;
                                 Thread.Sleep(2);
                             }
@@ -422,14 +484,14 @@ namespace NVRCsharpDemo
                     }
                     break;
                 default:
-                    if (dwBufSize > 0 && m_lPort != -1)
+                    if (dwBufSize > 0 && lPort != -1)
                     {
                         //送入其他数据 Input the other data
                         //for (int i = 0; i < 999; i++) //dingyh
                         {
-                            if (!PlayCtrl.PlayM4_InputData(m_lPort, pBuffer, dwBufSize))
+                            if (!PlayCtrl.PlayM4_InputData(lPort, pBuffer, dwBufSize))
                             {
-                                iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+                                iLastErr = PlayCtrl.PlayM4_GetLastError(lPort);
                                 str = "PlayM4_InputData failed, error code= " + iLastErr;
                                 Thread.Sleep(2);
                             }
@@ -466,22 +528,41 @@ namespace NVRCsharpDemo
                 lpPreviewInfo.dwLinkMode = 0;//连接方式：0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP 
                 lpPreviewInfo.bBlocked = true; //0- 非阻塞取流，1- 阻塞取流
 
-                IntPtr pUser = IntPtr.Zero;//用户数据 user data 
+                IntPtr pUser = new IntPtr(lpPreviewInfo.lChannel);//IntPtr.Zero;//用户数据 user data
+                if (!channelPortDict.ContainsKey(lpPreviewInfo.lChannel))
+                {
+                    channelPortDict.Add(lpPreviewInfo.lChannel, -1);
+                }
+
+                if (!lRealHandleDict.ContainsKey(lpPreviewInfo.lChannel))
+                {
+                    lRealHandleDict.Add(lpPreviewInfo.lChannel, -1);
+                }
 
                 if (comboBoxView.SelectedIndex == 0)
                 {
                     //打开预览 Start live view 
-                    m_lRealHandle = CHCNetSDK.NET_DVR_RealPlay_V40(m_lUserID, ref lpPreviewInfo, null/*RealData*/, pUser);
+                    channelPortDict[lpPreviewInfo.lChannel] = CHCNetSDK.NET_DVR_RealPlay_V40(m_lUserID, ref lpPreviewInfo, null/*RealData*/, pUser);
                 }
                 else  //回调解码
                 {
-                    lpPreviewInfo.hPlayWnd = IntPtr.Zero;//预览窗口 live view window
-                    m_ptrRealHandle = selectedRealPlayWnd.Handle;
-                    RealData = new CHCNetSDK.REALDATACALLBACK(RealDataCallBack);//预览实时流回调函数 real-time stream callback function 
-                    m_lRealHandle = CHCNetSDK.NET_DVR_RealPlay_V40(m_lUserID, ref lpPreviewInfo, RealData, pUser);
+                    if (!ptrRealHandleDict.ContainsKey(lpPreviewInfo.lChannel))
+                    {
+                        ptrRealHandleDict.Add(lpPreviewInfo.lChannel, selectedRealPlayWnd.Handle);
+                    }
+                    else
+                    {
+                        ptrRealHandleDict[lpPreviewInfo.lChannel] = selectedRealPlayWnd.Handle;
+                    }
+
+                    //RealData = new CHCNetSDK.REALDATACALLBACK(RealDataCallBack);//预览实时流回调函数 real-time stream callback function 
+                    //lRealHandleDict[lpPreviewInfo.lChannel] = CHCNetSDK.NET_DVR_RealPlay_V40(m_lUserID, ref lpPreviewInfo, RealData, pUser);
+                    CHCNetSDK.REALDATACALLBACK RealData = new CHCNetSDK.REALDATACALLBACK(RealDataCallBack);//预览实时流回调函数 real-time stream callback function 
+                    RealDataDict.Add(lpPreviewInfo.lChannel, RealData);
+                    lRealHandleDict[lpPreviewInfo.lChannel] = CHCNetSDK.NET_DVR_RealPlay_V40(m_lUserID, ref lpPreviewInfo, RealData, pUser);
                 }
 
-                if (m_lRealHandle < 0)
+                if (lRealHandleDict[lpPreviewInfo.lChannel] < 0)
                 {
                     iLastErr = CHCNetSDK.NET_DVR_GetLastError();
                     str = "NET_DVR_RealPlay_V40 failed, error code= " + iLastErr; //预览失败，输出错误号 failed to start live view, and output the error code.
@@ -500,42 +581,42 @@ namespace NVRCsharpDemo
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            //停止预览 Stop live view 
-            if (!CHCNetSDK.NET_DVR_StopRealPlay(m_lRealHandle))
-            {
-                iLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                str = "NET_DVR_StopRealPlay failed, error code= " + iLastErr;
-                DebugInfo(str);
-                return;
-            }
+            ////停止预览 Stop live view 
+            //if (!CHCNetSDK.NET_DVR_StopRealPlay(m_lRealHandle))
+            //{
+            //    iLastErr = CHCNetSDK.NET_DVR_GetLastError();
+            //    str = "NET_DVR_StopRealPlay failed, error code= " + iLastErr;
+            //    DebugInfo(str);
+            //    return;
+            //}
 
-            if ((comboBoxView.SelectedIndex == 1) && (m_lPort >= 0))
-            {
-                if (!PlayCtrl.PlayM4_Stop(m_lPort))
-                {
-                    iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
-                    str = "PlayM4_Stop failed, error code= " + iLastErr;
-                    DebugInfo(str);
-                }
-                if (!PlayCtrl.PlayM4_CloseStream(m_lPort))
-                {
-                    iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
-                    str = "PlayM4_CloseStream failed, error code= " + iLastErr;
-                    DebugInfo(str);
-                }
-                if (!PlayCtrl.PlayM4_FreePort(m_lPort))
-                {
-                    iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
-                    str = "PlayM4_FreePort failed, error code= " + iLastErr;
-                    DebugInfo(str);
-                }
-                m_lPort = -1;
-            }
+            //if ((comboBoxView.SelectedIndex == 1) && (m_lPort >= 0))
+            //{
+            //    if (!PlayCtrl.PlayM4_Stop(m_lPort))
+            //    {
+            //        iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+            //        str = "PlayM4_Stop failed, error code= " + iLastErr;
+            //        DebugInfo(str);
+            //    }
+            //    if (!PlayCtrl.PlayM4_CloseStream(m_lPort))
+            //    {
+            //        iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+            //        str = "PlayM4_CloseStream failed, error code= " + iLastErr;
+            //        DebugInfo(str);
+            //    }
+            //    if (!PlayCtrl.PlayM4_FreePort(m_lPort))
+            //    {
+            //        iLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
+            //        str = "PlayM4_FreePort failed, error code= " + iLastErr;
+            //        DebugInfo(str);
+            //    }
+            //    m_lPort = -1;
+            //}
 
-            DebugInfo("NET_DVR_StopRealPlay succ!");
-            m_lRealHandle = -1;
-            btnPreview.Text = "Live View";
-            selectedRealPlayWnd.Invalidate();//刷新窗口 refresh the window
+            //DebugInfo("NET_DVR_StopRealPlay succ!");
+            //m_lRealHandle = -1;
+            //btnPreview.Text = "Live View";
+            //selectedRealPlayWnd.Invalidate();//刷新窗口 refresh the window
         }
 
         private void btnBMP_Click(object sender, EventArgs e)
@@ -569,7 +650,7 @@ namespace NVRCsharpDemo
             return;
         }
 
-      
+
 
         private void btnJPEG_Click(object sender, EventArgs e)
         {
@@ -776,7 +857,7 @@ namespace NVRCsharpDemo
                 g.FillRectangle(new SolidBrush(picCapture.BackColor), new Rectangle(0, 0, picCapture.Width, picCapture.Height));//不使用这句话，那么这个bmp的背景就是透明的
                 g.DrawImage(bmpformfile, 0, 0, bmpformfile.Width, bmpformfile.Height);//将图片画到画板上
                 g.Dispose();//释放画板所占资源
-                            //不直接使用pbImg.Image = Image.FormFile(ofd.FileName)是因为这样会让图片一直处于打开状态，也就无法保存修改后的图片；详见http://www.wanxin.org/redirect.php?tid=3&goto=lastpost
+                //不直接使用pbImg.Image = Image.FormFile(ofd.FileName)是因为这样会让图片一直处于打开状态，也就无法保存修改后的图片；详见http://www.wanxin.org/redirect.php?tid=3&goto=lastpost
 
                 dt = new DrawTools(this.picCapture.CreateGraphics(), Color.Red, bmp);//实例化工具类
             }
@@ -838,7 +919,7 @@ namespace NVRCsharpDemo
 
                 switch (sType)
                 {
-                    case "Eraser":  break;
+                    case "Eraser": break;
                     case "Rect": rect = new int[2] { (int)Math.Abs(e.X - dt.startPointF.X), (int)Math.Abs(e.Y - dt.startPointF.Y) }; break;
                     case "Line": line = new int[2, 2] { { (int)dt.startPointF.X, (int)dt.startPointF.Y }, { (int)e.X, (int)e.Y } }; break;
                     default: break;
@@ -848,11 +929,41 @@ namespace NVRCsharpDemo
             }
         }
 
-        private static MODSDK.CMP_FRAME_INFO_DELEGATE del;
+        private static MODSDK.CMP_FRAME_INFO_DELEGATE del1;
+        private static MODSDK.CMP_FRAME_INFO_DELEGATE del2;
+
         private void btnCallModCreate_Click(object sender, EventArgs e)
         {
-            del = new MODSDK.CMP_FRAME_INFO_DELEGATE(onCallback);
+            int selectedChannel = -1;
+            int[,] line = new int[2, 2];
+            foreach (var item in ptrRealHandleDict)
+            {
+                if (item.Value == selectedRealPlayWnd.Handle)
+                {
+                    line = lineDict[item.Key];
+                    selectedChannel = item.Key;
+                    break;
+                }
+            }
+            int[] rect = new int[2];
+            foreach (var item in ptrRealHandleDict)
+            {
+                if (item.Value == selectedRealPlayWnd.Handle)
+                {
+                    rect = rectDict[item.Key];
+                    break;
+                }
+            }
 
+            //del = new MODSDK.CMP_FRAME_INFO_DELEGATE(onCallback);
+            if (selectedChannel == 1)
+            {
+                del1 = new MODSDK.CMP_FRAME_INFO_DELEGATE(onCallback);
+            }
+            else
+            {
+                del2 = new MODSDK.CMP_FRAME_INFO_DELEGATE(onCallback);
+            }
 
             MODSDK.POINT point1 = new MODSDK.POINT();
             point1.x = line[0, 0];
@@ -897,14 +1008,23 @@ namespace NVRCsharpDemo
             jtOpenParam.calibrationObjectWidth = (uint)rect[0];
             jtOpenParam.calibrationObjectHeight = (uint)rect[0];
 
-            jtOpenParam.pCallback = del;
+            //jtOpenParam.pCallback = del;
+            if (selectedChannel == 1)
+            {
+                jtOpenParam.pCallback = del1;
+            }
+            else
+            {
+                jtOpenParam.pCallback = del2;
+            }
 
             jtOpenParam.dwCallback = 1;
 
             uint[] dwReverse = new uint[] { 1 };
             jtOpenParam.dwReverse = dwReverse;
 
-            glopara = MODSDK.JtModCreate(ref jtOpenParam);
+            int glopara = MODSDK.JtModCreate(ref jtOpenParam);
+            gloparaDict.Add(selectedChannel, glopara);
 
 
         }
@@ -1006,8 +1126,16 @@ namespace NVRCsharpDemo
             //用委托切换到主线程
             this.BeginInvoke(new Action(() =>
             {
-                txtEntryNum.Text = callBackParam.entryNum.ToString();
-                txtExitNum.Text = callBackParam.exitNum.ToString();
+                if (callBackParam.nChannelID == 1)
+                {
+                    txtEntryNum1.Text = (int.Parse(txtEntryNum1.Text) + callBackParam.entryNum).ToString();
+                    txtExitNum1.Text = (int.Parse(txtEntryNum1.Text) + callBackParam.exitNum).ToString();
+                }
+                else if (callBackParam.nChannelID == 15)
+                {
+                    txtEntryNum15.Text = (int.Parse(txtEntryNum15.Text) + callBackParam.entryNum).ToString();
+                    txtExitNum15.Text = (int.Parse(txtEntryNum15.Text) + callBackParam.exitNum).ToString();
+                }
             }));
 
 
@@ -1047,7 +1175,8 @@ namespace NVRCsharpDemo
             panel.TabIndex = index;
 
             panel.MouseDown += Panel_MouseDown;
-            
+
+
             return panel;
         }
 
@@ -1055,13 +1184,13 @@ namespace NVRCsharpDemo
         {
             foreach (PictureBox item in this.tabPage1.Controls)
             {
-                selectedRealPlayWnd.BackColor = Color.Black;
-                selectedRealPlayWnd.BorderStyle = BorderStyle.None;
+                //item.BackColor = Color.Black;
+                //item.BorderStyle = BorderStyle.None;
             }
 
             selectedRealPlayWnd = sender as PictureBox;
-            selectedRealPlayWnd.BackColor = Color.Gray;
-            selectedRealPlayWnd.BorderStyle = BorderStyle.Fixed3D;
+            //selectedRealPlayWnd.BackColor = Color.Gray;
+            //selectedRealPlayWnd.BorderStyle = BorderStyle.Fixed3D;
         }
 
 
@@ -1098,10 +1227,12 @@ namespace NVRCsharpDemo
                 modulo = 8;
 
             int width, height;
-            //420 为整个预览区的宽
-            width = (420 - modulo * 1) / modulo;
-            //285 为整个预览区的高
-            height = (285 - modulo * 1) / modulo;
+
+            //整个预览区的宽
+            width = (tabControl1.Width - modulo * 1) / modulo;
+
+            //整个预览区的高
+            height = (tabControl1.Height - modulo * 1) / modulo;
 
             for (int i = 0; i < channelCount; i++)
             {
@@ -1136,7 +1267,8 @@ namespace NVRCsharpDemo
             selectedRealPlayWnd = tabPage1.Controls[0] as PictureBox;
         }
 
-      
+
+
         /********************分屏*************************/
     }
 }
